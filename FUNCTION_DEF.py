@@ -1,7 +1,27 @@
 from datetime import datetime
 def admin():
-    if input('press C for change the Password\t').upper()=='C':change_password()
+    response=input('''press C for change the Password
+                press R to remove a user
+                press A to remove all user data\t''').upper()
+    if response=='C':change_password()
+    elif response=='R':removeuser()
+    elif response=='A':removeall()
     else:print('Wrong Entry')
+def removeuser():
+    if transac_server_password():
+        ac_no=input('Enter Account No. to be Deleted\t')
+        cust_name=input('Enter Full Name of the Customer\t')
+        obj=open('data.txt','r');found=0
+        cust_data=obj.readlines();obj.close();obj=open('data.txt','w')
+        if confirmation_passw():
+            for i in cust_data:
+                if not i.startswith(ac_no) and i.split('%*')[0]!=ac_no:obj.write(i)
+                else:found=1
+            obj.close();print('Successfully Done') if found==1 else print('Account not found!')
+def removeall():
+    if transac_server_password() and confirmation_passw():obj=open('data.txt','w');obj.close()
+    print('Successfully Erased!')
+
 
 def transac_server_password():#this function is built for safe transaction:employee, other than desktop owner can't make a transaction
     obj=open('encryption.txt','r')
@@ -24,7 +44,7 @@ def confirmation_passw():
 def change_password():#this function is access when you type "access":if yo forgot password, it handles
     obj=open('encryption.txt','r')
     curr_pwd=obj.read();obj.close()
-    if input('Enter Current Password\t')==curr_pwd and obj.closed and confirmation_passw():
+    if input('Enter Current Password\t')==curr_pwd and transac_server_password() and confirmation_passw():
         new_pwd=input('Enter New Password\t')
         obj=open('encryption.txt','w')
         obj.write(new_pwd)
